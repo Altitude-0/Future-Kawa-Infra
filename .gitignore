@@ -1,0 +1,64 @@
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+tfplan
+.terraform.lock.hcl
+.terraformrc
+terraform.rc
+
+# --- Kubernetes / K3s ---
+kubeconfig.yaml
+.kube/
+*.kubeconfig
+
+# --- Helm ---
+charts/
+tmp/
+*.tgz
+.helmignore
+
+# --- Environment & Secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pub
+*.cert
+*.crt
+*.pfx
+secrets.yaml
+
+# --- OS Specific ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# --- Editor Specific ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --- Logs ---
+*.log
+terraform.log
+crash.log
+
+# --- Project Specific ---
+v1_docs/init/vault_secrets.md # Sensitive info
+v1_docs/init/vault_online.md  # Potential sensitive info
+GEMINI.md
+v2_docs
+v1_docs
+scripts
+loki
+test.yaml
