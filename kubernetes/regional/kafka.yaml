@@ -1,0 +1,64 @@
+# --- Regional Kafka Broker ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: {{ namespace }}
+  labels:
+    app: kafka
+    country: "{{ country }}"
+    environment: "{{ environment }}"
+spec:
+  replicas: {{ replicas }}
+  selector:
+    matchLabels:
+      app: kafka
+      country: "{{ country }}"
+      environment: "{{ environment }}"
+  template:
+    metadata:
+      labels:
+        app: kafka
+        country: "{{ country }}"
+        environment: "{{ environment }}"
+    spec:
+      containers:
+        - name: kafka
+          image: "{{ image }}"
+          env:
+            - name: KAFKA_CFG_NODE_ID
+              value: "0"
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: "controller,broker"
+            - name: KAFKA_CFG_LISTENERS
+              value: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://kafka:9092,EXTERNAL://{{ ui_host }}:{{ kafka_port }}"
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
+            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+              value: "0@localhost:9093"
+            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+              value: "CONTROLLER"
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: {{ namespace }}
+spec:
+  type: NodePort
+  selector:
+    app: kafka
+    country: "{{ country }}"
+    environment: "{{ environment }}"
+  ports:
+    - name: internal
+      port: 9092
+      targetPort: 9092
+    - name: external
+      port: 9094
+      targetPort: 9094
+      nodePort: {{ kafka_port }}

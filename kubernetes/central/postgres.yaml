@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: {{ namespace }}
+  labels:
+    app: postgres
+    role: main
+    environment: "{{ environment }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+      role: main
+      environment: "{{ environment }}"
+  template:
+    metadata:
+      labels:
+        app: postgres
+        role: main
+        environment: "{{ environment }}"
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ image }}"
+          env:
+            - name: POSTGRES_DB
+              value: "sales_analysis"
+            - name: POSTGRES_PASSWORD
+              value: "password"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: {{ namespace }}
+spec:
+  type: NodePort
+  selector:
+    app: postgres
+    role: main
+    environment: "{{ environment }}"
+  ports:
+    - port: 5432
+      targetPort: 5432
+      nodePort: 31432

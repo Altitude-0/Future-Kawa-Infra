@@ -1,0 +1,34 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: ghcr-auth
+  namespace: {{ namespace }}
+spec:
+  refreshInterval: "1h"
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: ghcr-auth
+    template:
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: |
+          {
+            "auths": {
+              "https://ghcr.io": {
+                "username": "{{ .username }}",
+                "password": "{{ .token }}",
+                "auth": "{{ printf `%s:%s` .username .token | b64enc }}"
+              }
+            }
+          }
+  data:
+  - secretKey: username
+    remoteRef:
+      key: ghcr-credentials
+      property: username
+  - secretKey: token
+    remoteRef:
+      key: ghcr-credentials
+      property: token

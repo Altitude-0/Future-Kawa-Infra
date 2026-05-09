@@ -1,0 +1,63 @@
+---
+- name: "Manage Namespace for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    api_version: v1
+    kind: Namespace
+    name: "{{ environment }}-{{ country_item.name }}"
+    state: present
+
+- name: "Apply GHCR Auth for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/common/ghcr-auth.yaml') }}"
+  vars:
+    namespace: "{{ environment }}-{{ country_item.name }}"
+
+- name: "Deploy Regional API for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/api.yaml') }}"
+  vars:
+    namespace: "{{ environment }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ country_api_image }}"
+    api_port: "{{ country_item.api_port }}"
+    api_host: "{{ country_item.api_host }}"
+
+- name: "Deploy Kafka for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/kafka.yaml') }}"
+  vars:
+    namespace: "{{ environment }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ kafka_image }}"
+    ui_host: "{{ country_item.ui_host }}"
+    kafka_port: "{{ country_item.kafka_port }}"
+
+- name: "Deploy Kafka UI for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/kafka-ui.yaml') }}"
+  vars:
+    namespace: "{{ environment }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ kafka_ui_image }}"
+    ui_host: "{{ country_item.ui_host }}"
+    ui_port: "{{ country_item.ui_port }}"
+
+- name: "Deploy Regional Postgres for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/postgres.yaml') }}"
+  vars:
+    namespace: "{{ environment }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ postgres_image }}"
+    db_port: "{{ country_item.db_port }}"
