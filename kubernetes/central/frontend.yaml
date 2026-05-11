@@ -6,7 +6,7 @@ metadata:
   labels:
     app: frontend
     role: main
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
   annotations:
     keel.sh/policy: "regex"
     keel.sh/match: "^[0-9]{8}-[0-9]+$"
@@ -18,13 +18,13 @@ spec:
     matchLabels:
       app: frontend
       role: main
-      environment: "{{ environment }}"
+      environment: "{{ env_name }}"
   template:
     metadata:
       labels:
         app: frontend
         role: main
-        environment: "{{ environment }}"
+        environment: "{{ env_name }}"
     spec:
       containers:
         - name: frontend
@@ -42,7 +42,7 @@ spec:
   selector:
     app: frontend
     role: main
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
   ports:
     - port: 80
       targetPort: 80

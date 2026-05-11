@@ -7,20 +7,20 @@ metadata:
   labels:
     app: kafka-ui
     country: "{{ country }}"
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: kafka-ui
       country: "{{ country }}"
-      environment: "{{ environment }}"
+      environment: "{{ env_name }}"
   template:
     metadata:
       labels:
         app: kafka-ui
         country: "{{ country }}"
-        environment: "{{ environment }}"
+        environment: "{{ env_name }}"
     spec:
       containers:
         - name: kafka-ui
@@ -43,7 +43,7 @@ spec:
   selector:
     app: kafka-ui
     country: "{{ country }}"
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
   ports:
     - port: 8080
       targetPort: 8080
@@ -57,7 +57,7 @@ metadata:
   labels:
     app: kafka-ui
     country: "{{ country }}"
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
 spec:
   rules:
   - host: "{{ ui_host }}"

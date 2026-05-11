@@ -6,7 +6,7 @@ metadata:
   labels:
     app: api
     role: main
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
 spec:
   replicas: {{ replicas }}
   strategy:
@@ -18,7 +18,7 @@ spec:
     matchLabels:
       app: api
       role: main
-      environment: "{{ environment }}"
+      environment: "{{ env_name }}"
   template:
     metadata:
       annotations:
@@ -26,7 +26,7 @@ spec:
       labels:
         app: api
         role: main
-        environment: "{{ environment }}"
+        environment: "{{ env_name }}"
     spec:
       imagePullSecrets:
         - name: ghcr-auth
@@ -36,27 +36,29 @@ spec:
           ports:
             - containerPort: {{ port }}
           env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/futurekawa_core"
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
               value: "postgres"
             - name: DB_PORT
               value: "5432"
-            - name: DB_USERNAME
+            - name: DB_USER
               value: "postgres"
             - name: DB_PASSWORD
-              value: "password"
+              value: "secret"
             - name: DB_DATABASE
-              value: "sales_analysis"
+              value: "futurekawa_core"
           readinessProbe:
             httpGet:
-              path: /health/readiness
+              path: /actuator/health
               port: {{ port }}
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /health/liveness
+              path: /actuator/health
               port: {{ port }}
             initialDelaySeconds: 15
             periodSeconds: 20
@@ -71,7 +73,7 @@ spec:
   selector:
     app: api
     role: main
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
   ports:
     - port: 80
       targetPort: {{ port }}

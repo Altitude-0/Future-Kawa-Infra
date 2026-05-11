@@ -6,29 +6,31 @@ metadata:
   labels:
     app: postgres
     role: main
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: postgres
       role: main
-      environment: "{{ environment }}"
+      environment: "{{ env_name }}"
   template:
     metadata:
       labels:
         app: postgres
         role: main
-        environment: "{{ environment }}"
+        environment: "{{ env_name }}"
     spec:
       containers:
         - name: postgres
           image: "{{ image }}"
           env:
             - name: POSTGRES_DB
-              value: "sales_analysis"
+              value: "futurekawa_core"
+            - name: POSTGRES_USER
+              value: postgres
             - name: POSTGRES_PASSWORD
-              value: "password"
+              value: "secret"
 ---
 apiVersion: v1
 kind: Service
@@ -40,7 +42,7 @@ spec:
   selector:
     app: postgres
     role: main
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
   ports:
     - port: 5432
       targetPort: 5432
