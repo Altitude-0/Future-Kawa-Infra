@@ -17,9 +17,9 @@ spec:
           {
             "auths": {
               "https://ghcr.io": {
-                "username": "{{ .username }}",
-                "password": "{{ .token }}",
-                "auth": "{{ printf `%s:%s` .username .token | b64enc }}"
+                "username": "{{ '{{' }} .username {{ '}}' }}",
+                "password": "{{ '{{' }} .token {{ '}}' }}",
+                "auth": "{{ '{{' }} printf "%s:%s" .username .token | b64enc {{ '}}' }}"
               }
             }
           }

@@ -3,45 +3,52 @@
   hosts: k3s_nodes
   become: yes
   vars:
-    environment: staging
+    env_name: staging
     kubeconfig: /etc/rancher/k3s/k3s.yaml
     
     # Images (can be overridden via -e)
-    central_api_image: "ghcr.io/karimdevwm/central-api:26042026-0"
-    country_api_image: "ghcr.io/karimdevwm/country-api:26042026-0"
+    central_api_image: "ghcr.io/altitude-0/futurekawa-product:f94cf902787208f362205a433c1369875f690433"
+    # country_api_image: "ghcr.io/karimdevwm/country-api:26042026-0"
     frontend_image: "nginx:1.27-alpine"
     kafka_image: "bitnamilegacy/kafka:3.7"
     kafka_ui_image: "provectuslabs/kafka-ui:latest"
     postgres_image: "postgres:16"
     
     # Common settings
-    port: 80
+    port: 8080
     replicas: 1
     
-    countries:
-      - name: brazil
-        ui_port: 30001
-        kafka_port: 30092
-        api_port: 30081
-        db_port: 30432
-        ui_host: "kafka-brazil.karim-portfolio.xyz"
-        api_host: "api-brazil.karim-portfolio.xyz"
-      - name: ecuador
-        ui_port: 30002
-        kafka_port: 30093
-        api_port: 30082
-        db_port: 30433
-        ui_host: "kafka-ecuador.karim-portfolio.xyz"
-        api_host: "api-ecuador.karim-portfolio.xyz"
-      - name: colombia
-        ui_port: 30003
-        kafka_port: 30094
-        api_port: 30083
-        db_port: 30434
-        ui_host: "kafka-columbia.karim-portfolio.xyz"
-        api_host: "api-columbia.karim-portfolio.xyz"
+    # countries:
+    #   - name: brazil
+    #     ui_port: 30001
+    #     kafka_port: 30092
+    #     api_port: 30081
+    #     db_port: 30432
+    #     ui_host: "kafka-brazil.karim-portfolio.xyz"
+    #     api_host: "api-brazil.karim-portfolio.xyz"
+    #   - name: ecuador
+    #     ui_port: 30002
+    #     kafka_port: 30093
+    #     api_port: 30082
+    #     db_port: 30433
+    #     ui_host: "kafka-ecuador.karim-portfolio.xyz"
+    #     api_host: "api-ecuador.karim-portfolio.xyz"
+    #   - name: colombia
+    #     ui_port: 30003
+    #     kafka_port: 30094
+    #     api_port: 30083
+    #     db_port: 30434
+    #     ui_host: "kafka-columbia.karim-portfolio.xyz"
+    #     api_host: "api-columbia.karim-portfolio.xyz"
 
   tasks:
+    - name: Install dependencies for Kubernetes modules via APT
+      apt:
+        name: 
+          - python3-kubernetes
+          - python3-yaml
+        state: present
+
     - name: Ensure Kubernetes collection is installed
       command: ansible-galaxy collection install kubernetes.core
       run_once: true
@@ -64,7 +71,7 @@
       kubernetes.core.k8s:
         kubeconfig: "{{ kubeconfig }}"
         state: present
-        src: ../vault-ingress.yaml
+        definition: "{{ lookup('file', '../vault-ingress.yaml') }}"
 
     # --- 1. CENTRAL APPLICATION SERVICES ---
     - name: Create Central Namespace
@@ -72,7 +79,7 @@
         kubeconfig: "{{ kubeconfig }}"
         api_version: v1
         kind: Namespace
-        name: "{{ environment }}-application"
+        name: "{{ env_name }}-application"
         state: present
 
     - name: Apply GHCR Auth to Central Namespace
@@ -81,7 +88,7 @@
         state: present
         definition: "{{ lookup('template', '../kubernetes/common/ghcr-auth.yaml') }}"
       vars:
-        namespace: "{{ environment }}-application"
+        namespace: "{{ env_name }}-application"
 
     - name: Deploy Central API
       kubernetes.core.k8s:
@@ -89,7 +96,7 @@
         state: present
         definition: "{{ lookup('template', '../kubernetes/central/api.yaml') }}"
       vars:
-        namespace: "{{ environment }}-application"
+        namespace: "{{ env_name }}-application"
         image: "{{ central_api_image }}"
 
     - name: Deploy Central Postgres
@@ -98,7 +105,7 @@
         state: present
         definition: "{{ lookup('template', '../kubernetes/central/postgres.yaml') }}"
       vars:
-        namespace: "{{ environment }}-application"
+        namespace: "{{ env_name }}-application"
         image: "{{ postgres_image }}"
 
     - name: Deploy Central Frontend
@@ -107,12 +114,12 @@
         state: present
         definition: "{{ lookup('template', '../kubernetes/central/frontend.yaml') }}"
       vars:
-        namespace: "{{ environment }}-application"
+        namespace: "{{ env_name }}-application"
         image: "{{ frontend_image }}"
 
     # --- 2. REGIONAL COUNTRY SERVICES ---
-    - name: Deploy Regional Services
-      include_tasks: regional_tasks.yml
-      loop: "{{ countries }}"
-      loop_control:
-        loop_var: country_item
+    # - name: Deploy Regional Services
+    #   include_tasks: regional_tasks.yml
+    #   loop: "{{ countries }}"
+    #   loop_control:
+    #     loop_var: country_item

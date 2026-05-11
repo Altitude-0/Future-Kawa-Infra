@@ -7,20 +7,20 @@ metadata:
   labels:
     app: kafka
     country: "{{ country }}"
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
 spec:
   replicas: {{ replicas }}
   selector:
     matchLabels:
       app: kafka
       country: "{{ country }}"
-      environment: "{{ environment }}"
+      environment: "{{ env_name }}"
   template:
     metadata:
       labels:
         app: kafka
         country: "{{ country }}"
-        environment: "{{ environment }}"
+        environment: "{{ env_name }}"
     spec:
       containers:
         - name: kafka
@@ -53,7 +53,7 @@ spec:
   selector:
     app: kafka
     country: "{{ country }}"
-    environment: "{{ environment }}"
+    environment: "{{ env_name }}"
   ports:
     - name: internal
       port: 9092
