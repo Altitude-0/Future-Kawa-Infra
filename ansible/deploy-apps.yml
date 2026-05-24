@@ -15,30 +15,30 @@
     postgres_image: "postgres:16"
     
     # Common settings
-    port: 8080
+    app_port: 8080
     replicas: 1
     
-    # countries:
-    #   - name: brazil
-    #     ui_port: 30001
-    #     kafka_port: 30092
+    countries:
+      - name: brazil
+        ui_port: 30001
+        kafka_port: 30092
     #     api_port: 30081
-    #     db_port: 30432
-    #     ui_host: "kafka-brazil.karim-portfolio.xyz"
+        db_port: 30432
+        ui_host: "kafka-brazil.karim-portfolio.xyz"
     #     api_host: "api-brazil.karim-portfolio.xyz"
-    #   - name: ecuador
-    #     ui_port: 30002
-    #     kafka_port: 30093
-    #     api_port: 30082
-    #     db_port: 30433
-    #     ui_host: "kafka-ecuador.karim-portfolio.xyz"
-    #     api_host: "api-ecuador.karim-portfolio.xyz"
-    #   - name: colombia
-    #     ui_port: 30003
-    #     kafka_port: 30094
+      - name: ecuador
+        ui_port: 30002
+        kafka_port: 30093
+        # api_port: 30082
+        db_port: 30433
+        ui_host: "kafka-ecuador.karim-portfolio.xyz"
+        # api_host: "api-ecuador.karim-portfolio.xyz"
+      - name: colombia
+        ui_port: 30003
+        kafka_port: 30094
     #     api_port: 30083
-    #     db_port: 30434
-    #     ui_host: "kafka-columbia.karim-portfolio.xyz"
+        db_port: 30434
+        ui_host: "kafka-columbia.karim-portfolio.xyz"
     #     api_host: "api-columbia.karim-portfolio.xyz"
 
   tasks:
@@ -59,19 +59,6 @@
       command: kubectl wait --for=condition=Ready node --all --timeout=180s
       environment:
         KUBECONFIG: "{{ kubeconfig }}"
-
-    # --- 0. VAULT & ESO BRIDGE ---
-    - name: Apply Vault ClusterSecretStore
-      kubernetes.core.k8s:
-        kubeconfig: "{{ kubeconfig }}"
-        state: present
-        definition: "{{ lookup('file', '../kubernetes/common/vault-backend.yaml') }}"
-
-    - name: Apply Vault Ingress
-      kubernetes.core.k8s:
-        kubeconfig: "{{ kubeconfig }}"
-        state: present
-        definition: "{{ lookup('file', '../vault-ingress.yaml') }}"
 
     # --- 1. CENTRAL APPLICATION SERVICES ---
     - name: Create Central Namespace
@@ -118,8 +105,8 @@
         image: "{{ frontend_image }}"
 
     # --- 2. REGIONAL COUNTRY SERVICES ---
-    # - name: Deploy Regional Services
-    #   include_tasks: regional_tasks.yml
-    #   loop: "{{ countries }}"
-    #   loop_control:
-    #     loop_var: country_item
+    - name: Deploy Regional Services
+      include_tasks: regional_tasks.yml
+      loop: "{{ countries }}"
+      loop_control:
+        loop_var: country_item
