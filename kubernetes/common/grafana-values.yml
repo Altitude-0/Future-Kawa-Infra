@@ -1,0 +1,8 @@
+persistence:
+   enabled: true
+   size: 10Gi
+   
+adminPassword: "your-secure-password" # Optional: Set your own admin password
+   
+service:
+   type: ClusterIP # Use ClusterIP if you plan to use an Ingress (like Traefik)

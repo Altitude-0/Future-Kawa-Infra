@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: {{ namespace }}
+  labels:
+    app: frontend
+    role: main
+    environment: "{{ env_name }}"
+  annotations:
+    keel.sh/policy: "regex"
+    keel.sh/match: "^[0-9]{8}-[0-9]+$"
+    keel.sh/trigger: "poll"
+    keel.sh/pollSchedule: "@every 1m"
+spec:
+  replicas: {{ replicas }}
+  selector:
+    matchLabels:
+      app: frontend
+      role: main
+      environment: "{{ env_name }}"
+  template:
+    metadata:
+      labels:
+        app: frontend
+        role: main
+        environment: "{{ env_name }}"
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ image }}"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: {{ namespace }}
+spec:
+  type: NodePort
+  selector:
+    app: frontend
+    role: main
+    environment: "{{ env_name }}"
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 31080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend
+  namespace: {{ namespace }}
+spec:
+  rules:
+  - host: "frontend.karim-portfolio.xyz"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80

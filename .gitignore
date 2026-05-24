@@ -57,8 +57,9 @@ crash.log
 v1_docs/init/vault_secrets.md # Sensitive info
 v1_docs/init/vault_online.md  # Potential sensitive info
 GEMINI.md
-v2_docs
-v1_docs
-scripts
+docs
 loki
 test.yaml
+command.md
+NEW_DEPLOYMENT.md
+REFACTORING_GUIDE.md
