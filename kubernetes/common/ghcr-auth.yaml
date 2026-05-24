@@ -1,7 +1,7 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: ghcr-auth
+  name: ghcr-credentials
   namespace: {{ namespace }}
 spec:
   refreshInterval: "1h"
@@ -9,7 +9,7 @@ spec:
     name: vault-backend
     kind: ClusterSecretStore
   target:
-    name: ghcr-auth
+    name: ghcr-credentials
     template:
       type: kubernetes.io/dockerconfigjson
       data:

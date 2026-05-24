@@ -30,22 +30,22 @@
 #         environment: "{{ env_name }}"
 #     spec:
 #       imagePullSecrets:
-#         - name: ghcr-auth
+#         - name: ghcr-credentials
 #       containers:
 #         - name: api
 #           image: "{{ image }}"
 #           ports:
-#             - containerPort: {{ port }}
+#             - containerPort: {{ app_port }}
 #           readinessProbe:
 #             httpGet:
 #               path: /health/readiness
-#               port: {{ port }}
+#               port: {{ app_port }}
 #             initialDelaySeconds: 5
 #             periodSeconds: 10
 #           livenessProbe:
 #             httpGet:
 #               path: /health/liveness
-#               port: {{ port }}
+#               port: {{ app_port }}
 #             initialDelaySeconds: 15
 #             periodSeconds: 20
 # ---
@@ -62,7 +62,7 @@
 #     environment: "{{ env_name }}"
 #   ports:
 #     - port: 80
-#       targetPort: {{ port }}
+#       targetPort: {{ app_port }}
 #       nodePort: {{ api_port }}
 # ---
 # apiVersion: networking.k8s.io/v1

@@ -15,17 +15,17 @@
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
 
-- name: "Deploy Regional API for {{ country_item.name }}"
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig }}"
-    state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/api.yaml') }}"
-  vars:
-    namespace: "{{ env_name }}-{{ country_item.name }}"
-    country: "{{ country_item.name }}"
-    image: "{{ country_api_image }}"
-    api_port: "{{ country_item.api_port }}"
-    api_host: "{{ country_item.api_host }}"
+# - name: "Deploy Regional API for {{ country_item.name }}"
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubeconfig }}"
+#     state: present
+#     definition: "{{ lookup('template', '../kubernetes/regional/api.yaml') }}"
+#   vars:
+#     namespace: "{{ env_name }}-{{ country_item.name }}"
+#     country: "{{ country_item.name }}"
+#     image: "{{ country_api_image }}"
+#     api_port: "{{ country_item.api_port }}"
+#     api_host: "{{ country_item.api_host }}"
 
 - name: "Deploy Kafka for {{ country_item.name }}"
   kubernetes.core.k8s:
