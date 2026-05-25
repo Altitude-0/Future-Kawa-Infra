@@ -76,3 +76,9 @@ variable "production_replicas" {
   type        = number
   default     = 3
 }
+
+variable "rabbitmq_image" {
+  description = "RabbitMQ container image."
+  type        = string
+  default     = "rabbitmq:3.12-management"
+}
