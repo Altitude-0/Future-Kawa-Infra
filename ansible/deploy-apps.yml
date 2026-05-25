@@ -13,6 +13,7 @@
     kafka_image: "bitnamilegacy/kafka:3.7"
     kafka_ui_image: "provectuslabs/kafka-ui:latest"
     postgres_image: "postgres:16"
+    rabbitmq_image: "rabbitmq:3.13-management-alpine"
     
     # Common settings
     app_port: 8080
@@ -25,6 +26,9 @@
     #     api_port: 30081
         db_port: 30432
         ui_host: "kafka-brazil.karim-portfolio.xyz"
+        rabbitmq_amqp_port: 30192
+        rabbitmq_ui_port: 30201
+        rabbitmq_ui_host: "rabbitmq-brazil.karim-portfolio.xyz"
     #     api_host: "api-brazil.karim-portfolio.xyz"
       - name: ecuador
         ui_port: 30002
@@ -32,6 +36,9 @@
         # api_port: 30082
         db_port: 30433
         ui_host: "kafka-ecuador.karim-portfolio.xyz"
+        rabbitmq_amqp_port: 30193
+        rabbitmq_ui_port: 30202
+        rabbitmq_ui_host: "rabbitmq-ecuador.karim-portfolio.xyz"
         # api_host: "api-ecuador.karim-portfolio.xyz"
       - name: colombia
         ui_port: 30003
@@ -39,6 +46,9 @@
     #     api_port: 30083
         db_port: 30434
         ui_host: "kafka-columbia.karim-portfolio.xyz"
+        rabbitmq_amqp_port: 30194
+        rabbitmq_ui_port: 30203
+        rabbitmq_ui_host: "rabbitmq-colombia.karim-portfolio.xyz"
     #     api_host: "api-columbia.karim-portfolio.xyz"
 
   tasks:
