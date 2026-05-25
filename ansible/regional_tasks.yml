@@ -61,3 +61,16 @@
     country: "{{ country_item.name }}"
     image: "{{ postgres_image }}"
     db_port: "{{ country_item.db_port }}"
+
+- name: "Deploy RabbitMQ for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/rabbitmq.yaml') }}"
+  vars:
+    namespace: "{{ env_name }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ rabbitmq_image }}"
+    rabbitmq_amqp_port: "{{ country_item.rabbitmq_amqp_port }}"
+    rabbitmq_ui_port: "{{ country_item.rabbitmq_ui_port }}"
+    rabbitmq_ui_host: "{{ country_item.rabbitmq_ui_host }}"
