@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: {{ namespace }}
+  labels:
+    app: rabbitmq
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+spec:
+  replicas: {{ replicas }}
+  selector:
+    matchLabels:
+      app: rabbitmq
+      country: "{{ country }}"
+      environment: "{{ env_name }}"
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        country: "{{ country }}"
+        environment: "{{ env_name }}"
+    spec:
+      containers:
+        - name: rabbitmq
+          image: "{{ image }}"
+          ports:
+            - name: amqp
+              containerPort: 5672
+            - name: management
+              containerPort: 15672
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "admin"
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "adminpassword"  # Customize this as needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: {{ namespace }}
+spec:
+  type: NodePort
+  selector:
+    app: rabbitmq
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+      nodePort: {{ rabbitmq_amqp_port }}
+    - name: management
+      port: 15672
+      targetPort: 15672
+      nodePort: {{ rabbitmq_ui_port }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rabbitmq-ui
+  namespace: {{ namespace }}
+  labels:
+    app: rabbitmq-ui
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+spec:
+  rules:
+  - host: "{{ rabbitmq_ui_host }}"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rabbitmq
+            port:
+              number: 15672
