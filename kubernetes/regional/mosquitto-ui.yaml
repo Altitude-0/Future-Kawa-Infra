@@ -1,0 +1,87 @@
+# --- Regional Mosquitto Management Center (UI) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto-ui
+  namespace: {{ namespace }}
+  labels:
+    app: mosquitto-ui
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mosquitto-ui
+      country: "{{ country }}"
+      environment: "{{ env_name }}"
+  template:
+    metadata:
+      labels:
+        app: mosquitto-ui
+        country: "{{ country }}"
+        environment: "{{ env_name }}"
+    spec:
+      containers:
+        - name: mosquitto-ui
+          image: "{{ image }}"
+          ports:
+            - name: http
+              containerPort: 8088
+          env:
+            - name: CEDALO_MC_BROKER_ID
+              value: "mosquitto-{{ country }}"
+            - name: CEDALO_MC_BROKER_NAME
+              value: "Mosquitto Broker {{ country | capitalize }}"
+            - name: CEDALO_MC_BROKER_URL
+              value: "mqtt://mosquitto:1883"
+            - name: CEDALO_MC_PROXY_HOST
+              value: "0.0.0.0"
+            - name: CEDALO_MC_USERNAME
+              value: "admin"
+            - name: CEDALO_MC_PASSWORD
+              value: "adminpassword"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /management-center/config
+      volumes:
+        - name: config-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-ui
+  namespace: {{ namespace }}
+spec:
+  type: NodePort
+  selector:
+    app: mosquitto-ui
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+  ports:
+    - port: 8088
+      targetPort: 8088
+      nodePort: {{ ui_port }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mosquitto-ui
+  namespace: {{ namespace }}
+  labels:
+    app: mosquitto-ui
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+spec:
+  rules:
+  - host: "{{ ui_host }}"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mosquitto-ui
+            port:
+              number: 8088
