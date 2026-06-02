@@ -1,11 +1,11 @@
-# --- Regional API Deployment ---
+# --- Regional MQTT Service Deployment ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: mqtt-service
   namespace: {{ namespace }}
   labels:
-    app: api
+    app: mqtt-service
     country: "{{ country }}"
     environment: "{{ env_name }}"
 spec:
@@ -17,7 +17,7 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: api
+      app: mqtt-service
       country: "{{ country }}"
       environment: "{{ env_name }}"
   template:
@@ -25,64 +25,71 @@ spec:
       annotations:
         ansible_restarted_at: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
       labels:
-        app: api
+        app: mqtt-service
         country: "{{ country }}"
         environment: "{{ env_name }}"
     spec:
       imagePullSecrets:
         - name: ghcr-credentials
       containers:
-        - name: api
+        - name: mqtt-service
           image: "{{ image }}"
           ports:
-            - containerPort: {{ app_port }}
-          readinessProbe:
-            httpGet:
-              path: /health/readiness
-              port: {{ app_port }}
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /health/liveness
-              port: {{ app_port }}
-            initialDelaySeconds: 15
-            periodSeconds: 20
+            - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/futurekawa-postgres"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_PASSWORD
+              value: "secret"
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+            - name: SPRING_RABBITMQ_USERNAME
+              value: "admin"
+            - name: SPRING_RABBITMQ_PASSWORD
+              value: "adminpassword"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+            - name: MQTT_BROKER_URL
+              value: "tcp://mosquitto:1883"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: api
+  name: mqtt-service
   namespace: {{ namespace }}
 spec:
   type: NodePort
   selector:
-    app: api
+    app: mqtt-service
     country: "{{ country }}"
     environment: "{{ env_name }}"
   ports:
     - port: 80
-      targetPort: {{ app_port }}
-      nodePort: {{ api_port }}
+      targetPort: 8081
+      nodePort: {{ mqtt_service_port }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api
+  name: mqtt-service
   namespace: {{ namespace }}
   labels:
-    app: api
+    app: mqtt-service
     country: "{{ country }}"
     environment: "{{ env_name }}"
 spec:
   rules:
-  - host: "{{ api_host }}"
+  - host: "{{ mqtt_service_host }}"
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: api
+            name: mqtt-service
             port:
               number: 80

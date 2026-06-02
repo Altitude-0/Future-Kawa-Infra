@@ -28,9 +28,9 @@ spec:
           env:
             - name: POSTGRES_DB
               value: "futurekawa-postgres"
-            - name: DB_USER
+            - name: POSTGRES_USER
               value: "postgres"
-            - name: DB_PASSWORD
+            - name: POSTGRES_PASSWORD
               value: "secret"
 ---
 apiVersion: v1

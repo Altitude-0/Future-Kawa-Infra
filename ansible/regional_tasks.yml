@@ -27,29 +27,29 @@
 #     api_port: "{{ country_item.api_port }}"
 #     api_host: "{{ country_item.api_host }}"
 
-- name: "Deploy Kafka for {{ country_item.name }}"
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig }}"
-    state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/kafka.yaml') }}"
-  vars:
-    namespace: "{{ env_name }}-{{ country_item.name }}"
-    country: "{{ country_item.name }}"
-    image: "{{ kafka_image }}"
-    ui_host: "{{ country_item.ui_host }}"
-    kafka_port: "{{ country_item.kafka_port }}"
+# - name: "Deploy Kafka for {{ country_item.name }}"
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubeconfig }}"
+#     state: present
+#     definition: "{{ lookup('template', '../kubernetes/regional/kafka.yaml') }}"
+#   vars:
+#     namespace: "{{ env_name }}-{{ country_item.name }}"
+#     country: "{{ country_item.name }}"
+#     image: "{{ kafka_image }}"
+#     ui_host: "{{ country_item.ui_host }}"
+#     kafka_port: "{{ country_item.kafka_port }}"
 
-- name: "Deploy Kafka UI for {{ country_item.name }}"
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig }}"
-    state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/kafka-ui.yaml') }}"
-  vars:
-    namespace: "{{ env_name }}-{{ country_item.name }}"
-    country: "{{ country_item.name }}"
-    image: "{{ kafka_ui_image }}"
-    ui_host: "{{ country_item.ui_host }}"
-    ui_port: "{{ country_item.ui_port }}"
+# - name: "Deploy Kafka UI for {{ country_item.name }}"
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubeconfig }}"
+#     state: present
+#     definition: "{{ lookup('template', '../kubernetes/regional/kafka-ui.yaml') }}"
+#   vars:
+#     namespace: "{{ env_name }}-{{ country_item.name }}"
+#     country: "{{ country_item.name }}"
+#     image: "{{ kafka_ui_image }}"
+#     ui_host: "{{ country_item.ui_host }}"
+#     ui_port: "{{ country_item.ui_port }}"
 
 - name: "Deploy Regional Postgres for {{ country_item.name }}"
   kubernetes.core.k8s:
@@ -61,3 +61,48 @@
     country: "{{ country_item.name }}"
     image: "{{ postgres_image }}"
     db_port: "{{ country_item.db_port }}"
+
+# - name: "Deploy RabbitMQ for {{ country_item.name }}"
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubeconfig }}"
+#     state: present
+#     definition: "{{ lookup('template', '../kubernetes/regional/rabbitmq.yaml') }}"
+#   vars:
+#     namespace: "{{ env_name }}-{{ country_item.name }}"
+#     country: "{{ country_item.name }}"
+#     image: "{{ rabbitmq_image }}"
+#     rabbitmq_amqp_port: "{{ country_item.rabbitmq_amqp_port }}"
+#     rabbitmq_ui_port: "{{ country_item.rabbitmq_ui_port }}"
+#     rabbitmq_ui_host: "{{ country_item.rabbitmq_ui_host }}"
+- name: "Deploy Mosquitto for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/mosquitto.yaml') }}"
+  vars:
+    namespace: "{{ env_name }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ mosquitto_image }}"
+    mosquitto_port: "{{ country_item.mosquitto_port }}"
+- name: "Deploy Mosquitto UI for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/mosquitto-ui.yaml') }}"
+  vars:
+    namespace: "{{ env_name }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ mosquitto_ui_image }}"
+    ui_host: "{{ country_item.mosquitto_ui_host }}"
+    ui_port: "{{ country_item.mosquitto_ui_port }}"
+- name: "Deploy MQTT Service for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/mqtt-service.yaml') }}"
+  vars:
+    namespace: "{{ env_name }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ mqtt_service }}"
+    mqtt_service_host: "{{ country_item.mqtt_service }}"
+    mqtt_service_port: "{{ country_item.mqtt_service_port }}"
