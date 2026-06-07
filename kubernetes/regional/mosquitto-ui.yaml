@@ -69,6 +69,8 @@ kind: Ingress
 metadata:
   name: mosquitto-ui
   namespace: {{ namespace }}
+  annotations:                                                                                                                         
+    traefik.ingress.kubernetes.io/router.middlewares: common-waf@kubernetescrd 
   labels:
     app: mosquitto-ui
     country: "{{ country }}"

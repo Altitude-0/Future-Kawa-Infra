@@ -77,6 +77,8 @@ kind: Ingress
 metadata:
   name: mqtt-service
   namespace: {{ namespace }}
+  annotations:                                                                                                                         
+    traefik.ingress.kubernetes.io/router.middlewares: common-waf@kubernetescrd 
   labels:
     app: mqtt-service
     country: "{{ country }}"
