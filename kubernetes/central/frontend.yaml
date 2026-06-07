@@ -53,6 +53,8 @@ kind: Ingress
 metadata:
   name: frontend
   namespace: {{ namespace }}
+  annotations:                                                                                                                         
+    traefik.ingress.kubernetes.io/router.middlewares: common-waf@kubernetescrd    
 spec:
   rules:
   - host: "frontend.karim-portfolio.xyz"

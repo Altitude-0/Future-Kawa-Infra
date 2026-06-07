@@ -1,0 +1,49 @@
+apiVersion: apps/v1                                                                                                                
+kind: Deployment                                                                                                                       
+metadata:                                                                                                                              
+  name: modsecurity                                                                                                                    
+  namespace: common                                                                                                                    
+spec:                                                                                                                                  
+  replicas: 1                                                                                                                          
+  selector:                                                                                                                            
+    matchLabels:                                                                                                                       
+      app: modsecurity                                                                                                                 
+  template:                                                                                                                            
+    metadata:                                                                                                                          
+      labels:                                                                                                                          
+        app: modsecurity                                                                                                               
+    spec:                                                                                                                              
+      containers:                                                                                                                      
+        - name: modsecurity                                                                                                            
+          image: owasp/modsecurity-crs:4.26.0-apache-202605200705   # OWASP CRS + ModSec                                                    
+          ports:                                                                                                                       
+            - containerPort: 8080                                                                                                        
+          env:                                                                                                                         
+            - name: PARANOIA            # CRS paranoia level: 1 (permissive) → 4 (strict)                                              
+              value: "1"                                                                                                               
+            - name: ANOMALY_INBOUND     # Score threshold to block (default 5)                                                         
+              value: "5"                                                                                                               
+            - name: ANOMALY_OUTBOUND    # Score threshold for responses                                                                
+              value: "4"
+            - name: BACKEND                                                                                                            
+              value: "http://dummy-backend.common.svc.cluster.local" 
+          volumeMounts:
+            - name: modsecurity-override                                                                                               
+              mountPath: /etc/modsecurity.d/modsecurity-override.conf                                                                  
+              subPath: modsecurity-override.conf
+      volumes:                                                                                                                         
+        - name: modsecurity-override                                                                                                   
+          configMap:                                                                                                                   
+            name: modsecurity-config                                                                                                    
+---                                                                                                                                    
+apiVersion: v1                                                                                                                         
+kind: Service                                                                                                                          
+metadata:                                                                                                                              
+  name: modsecurity                                                                                                                    
+  namespace: common                                                                                                                    
+spec:                                                                                                                                  
+  selector:                                                                                                                            
+    app: modsecurity                                                                                                                   
+  ports:                                                                                                                               
+    - port: 80                                                                                                                         
+      targetPort: 8080 
