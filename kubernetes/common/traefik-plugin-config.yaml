@@ -1,0 +1,13 @@
+# HelmChartConfig to patch k3s's built-in Traefik deployment                                                                           
+apiVersion: helm.cattle.io/v1                                                                                                          
+kind: HelmChartConfig                                                                                                                  
+metadata:                                                                                                                              
+  name: traefik                                                                                                                        
+  namespace: kube-system         # k3s always puts Traefik here                                                                        
+spec:                                                                                                                                  
+  valuesContent: |-                                                                                                                    
+    experimental:                                                                                                                      
+      plugins:                                                                                                                         
+        traefik-modsecurity-plugin:                                                                                                    
+          moduleName: "github.com/acouvreur/traefik-modsecurity-plugin"                                                                
+          version: "v1.3.0"      # pin the version 

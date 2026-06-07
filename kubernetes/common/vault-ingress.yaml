@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: vault-ui-ingress
   namespace: common
+  annotations:                                                                                                                         
+    traefik.ingress.kubernetes.io/router.middlewares: common-waf@kubernetescrd 
 spec:
   ingressClassName: traefik
   rules:

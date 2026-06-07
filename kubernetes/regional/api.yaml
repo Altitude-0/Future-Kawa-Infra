@@ -70,6 +70,8 @@ kind: Ingress
 metadata:
   name: api
   namespace: {{ namespace }}
+  annotations:                                                                                                                         
+    traefik.ingress.kubernetes.io/router.middlewares: common-waf@kubernetescrd 
   labels:
     app: api
     country: "{{ country }}"
