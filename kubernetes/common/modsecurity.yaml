@@ -26,7 +26,7 @@ spec:
             - name: ANOMALY_OUTBOUND    # Score threshold for responses                                                                
               value: "4"
             - name: BACKEND                                                                                                            
-              value: "http://dummy-backend.common.svc.cluster.local" 
+              value: "http://127.0.0.1:8080"
           volumeMounts:
             - name: modsecurity-override                                                                                               
               mountPath: /etc/modsecurity.d/modsecurity-override.conf                                                                  
