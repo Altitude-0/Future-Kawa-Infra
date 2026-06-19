@@ -11,8 +11,6 @@
     # country_api_image: "ghcr.io/karimdevwm/country-api:26042026-0"
     mqtt_service: "ghcr.io/altitude-0/futurekawa-mqtt-service:17eb7ae90d7f7f10fff0f862b72dee144a72e435"
     frontend_image: "nginx:1.27-alpine"
-    kafka_image: "bitnamilegacy/kafka:3.7"
-    kafka_ui_image: "provectuslabs/kafka-ui:latest"
     postgres_image: "postgres:16"                                                                                                    
     mosquitto_image: "eclipse-mosquitto:2.0.18"                                                                                        
     mosquitto_ui_image: "cedalo/management-center:2.6.4" 
@@ -24,9 +22,7 @@
     countries:
       - name: brazil
         ui_port: 30001
-        # kafka_port: 30092
         db_port: 30432
-        ui_host: "kafka-brazil.karim-portfolio.xyz"
     #     api_host: "api-brazil.karim-portfolio.xyz"
         mosquitto_port: 30292                                                                                                          
         mosquitto_ui_port: 30301                                                                                                       
@@ -35,9 +31,7 @@
         mqtt_service_port: 30081 
       - name: ecuador
         ui_port: 30002
-        # kafka_port: 30093
         db_port: 30433
-        ui_host: "kafka-ecuador.karim-portfolio.xyz"
         # api_host: "api-ecuador.karim-portfolio.xyz"
         # api_port: 30082
         mosquitto_port: 30293                                                                                                          
@@ -47,10 +41,8 @@
         mqtt_service_port: 30082
       - name: colombia
         ui_port: 30003
-        kafka_port: 30094
     #     api_port: 30083
         db_port: 30434
-        ui_host: "kafka-columbia.karim-portfolio.xyz"
     #     api_host: "api-columbia.karim-portfolio.xyz"
         mosquitto_port: 30294
         mosquitto_ui_port: 30303

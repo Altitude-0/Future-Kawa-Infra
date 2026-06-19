@@ -51,8 +51,6 @@ spec:
               value: "admin"
             - name: SPRING_RABBITMQ_PASSWORD
               value: "adminpassword"
-            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: "kafka:9092"
             - name: MQTT_BROKER_URL
               value: "tcp://mosquitto:1883"
 ---

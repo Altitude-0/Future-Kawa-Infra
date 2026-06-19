@@ -41,18 +41,6 @@ variable "frontend_image" {
   default     = "nginx:1.27-alpine"
 }
 
-variable "kafka_image" {
-  description = "Kafka container image."
-  type        = string
-  default     = "bitnamilegacy/kafka:3.7"
-}
-
-variable "kafka_ui_image" {
-  description = "Kafka UI container image."
-  type        = string
-  default     = "provectuslabs/kafka-ui:latest"
-}
-
 variable "postgres_image" {
   description = "PostgreSQL container image."
   type        = string
