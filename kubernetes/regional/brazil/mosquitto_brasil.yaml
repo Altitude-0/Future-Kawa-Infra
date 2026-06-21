@@ -69,4 +69,4 @@ spec:
     - name: mqtt
       port: 1883
       targetPort: 1883
-      nodePort: {{ mosquitto_port }}
+      nodePort: {{ mosquitto_port | int }} 
