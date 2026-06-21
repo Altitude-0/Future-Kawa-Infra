@@ -62,7 +62,7 @@ spec:
   ports:
     - port: 8088
       targetPort: 8088
-      nodePort: {{ ui_port }}
+      nodePort: {{ ui_port | int }} 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
