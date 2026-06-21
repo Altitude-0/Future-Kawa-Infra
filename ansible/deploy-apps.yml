@@ -7,13 +7,18 @@
     kubeconfig: /etc/rancher/k3s/k3s.yaml
     
     # Images (can be overridden via -e)
-    central_api_image: "ghcr.io/altitude-0/futurekawa-product:f94cf902787208f362205a433c1369875f690433"
-    # country_api_image: "ghcr.io/karimdevwm/country-api:26042026-0"
-    mqtt_service: "ghcr.io/altitude-0/futurekawa-mqtt-service:17eb7ae90d7f7f10fff0f862b72dee144a72e435"
-    frontend_image: "nginx:1.27-alpine"
+    # central_api_image: "ghcr.io/altitude-0/futurekawa-product:f94cf902787208f362205a433c1369875f690433"
+    core_brasil_image: ghcr.io/altitude-0/fk-brasil-core:v1.0.1
+    alerting_brazil_image: "ghcr.io/altitude-0/fk-brasil-alerting:v1.0.0"
+    mqtt_service_brazil_image: "ghcr.io/altitude-0/fk-brasil-mqtt:v1.0.1"
+    # alerting_ecuador_image:  "ghcr.io/altitude-0/fk-ecuador-alerting:v1.0.0"
+    # alerting_colombia_image: "ghcr.io/altitude-0/fk-colombia-alerting:v1.0.0"
+    # frontend_image: "nginx:1.27-alpine"
     postgres_image: "postgres:16"                                                                                                    
     mosquitto_image: "eclipse-mosquitto:2.0.18"                                                                                        
-    mosquitto_ui_image: "cedalo/management-center:2.6.4" 
+    mosquitto_ui_image: "cedalo/management-center:2.6.4"
+    rabbitmq_image: "rabbitmq:3.13-management"
+    mailhog_image: "mailhog/mailhog:v1.0.1" 
     
     # Common settings
     app_port: 8080
@@ -23,32 +28,47 @@
       - name: brazil
         ui_port: 30001
         db_port: 30432
-    #     api_host: "api-brazil.karim-portfolio.xyz"
+        api_host: "api-brazil.karim-portfolio.xyz"
+        core_port: 30800
         mosquitto_port: 30292                                                                                                          
         mosquitto_ui_port: 30301                                                                                                       
         mosquitto_ui_host: "mosquitto-brazil-ui.karim-portfolio.xyz"                                                                   
         mqtt_service: "mqtt-service-brazil.karim-portfolio.xyz"                                                                        
         mqtt_service_port: 30081 
-      - name: ecuador
-        ui_port: 30002
-        db_port: 30433
-        # api_host: "api-ecuador.karim-portfolio.xyz"
-        # api_port: 30082
-        mosquitto_port: 30293                                                                                                          
-        mosquitto_ui_port: 30302                                                                                                       
-        mosquitto_ui_host: "mosquitto-ecuador-ui.karim-portfolio.xyz"   
-        mqtt_service: "mqtt-service-ecuador.karim-portfolio.xyz"
-        mqtt_service_port: 30082
-      - name: colombia
-        ui_port: 30003
-    #     api_port: 30083
-        db_port: 30434
-    #     api_host: "api-columbia.karim-portfolio.xyz"
-        mosquitto_port: 30294
-        mosquitto_ui_port: 30303
-        mosquitto_ui_host: "mosquitto-colombia-ui.karim-portfolio.xyz"
-        mqtt_service: "mqtt-service-colombia.karim-portfolio.xyz"
-        mqtt_service_port: 30083
+        rabbitmq_amqp_port: 30672    # ← add this                                                                                              
+        rabbitmq_ui_port: 30673      # ← add this 
+        mailhog_smtp_port: 30025   # ← add                                                          
+        mailhog_ui_port:   30826   # ← add  
+
+      # - name: ecuador
+      #   ui_port: 30002
+      #   db_port: 30433
+      #   # api_host: "api-ecuador.karim-portfolio.xyz"
+      #   # core_port: 30083
+      #   mosquitto_port: 30293                                                                                                          
+      #   mosquitto_ui_port: 30302                                                                                                       
+      #   mosquitto_ui_host: "mosquitto-ecuador-ui.karim-portfolio.xyz"   
+      #   mqtt_service: "mqtt-service-ecuador.karim-portfolio.xyz"
+      #   mqtt_service_port: 30082
+      #   rabbitmq_amqp_port: 30674    # ← add this                                                                                              
+      #   rabbitmq_ui_port: 30675      # ← add this   
+      #   mailhog_smtp_port: 30026   # ← add                                                          
+      #   mailhog_ui_port:   30827   # ← add
+
+    #   - name: colombia
+    #     ui_port: 30003
+    # #     core_port: 30084
+    #     db_port: 30434
+    # #     api_host: "api-columbia.karim-portfolio.xyz"
+    #     mosquitto_port: 30294
+    #     mosquitto_ui_port: 30303
+    #     mosquitto_ui_host: "mosquitto-colombia-ui.karim-portfolio.xyz"
+    #     mqtt_service: "mqtt-service-colombia.karim-portfolio.xyz"
+    #     mqtt_service_port: 30083
+    #     rabbitmq_amqp_port: 30676    # ← add this
+    #     rabbitmq_ui_port: 30677      # ← add this
+    #     mailhog_smtp_port: 30027   # ← add                                                          
+    #     mailhog_ui_port:   30828   # ← add
 
   tasks:
     - name: Install dependencies for Kubernetes modules via APT
@@ -86,14 +106,14 @@
       vars:
         namespace: "{{ env_name }}-application"
 
-    - name: Deploy Central API
-      kubernetes.core.k8s:
-        kubeconfig: "{{ kubeconfig }}"
-        state: present
-        definition: "{{ lookup('template', '../kubernetes/central/api.yaml') }}"
-      vars:
-        namespace: "{{ env_name }}-application"
-        image: "{{ central_api_image }}"
+    # - name: Deploy Central API
+    #   kubernetes.core.k8s:
+    #     kubeconfig: "{{ kubeconfig }}"
+    #     state: present
+    #     definition: "{{ lookup('template', '../kubernetes/central/api.yaml') }}"
+    #   vars:
+    #     namespace: "{{ env_name }}-application"
+    #     image: "{{ central_api_image }}"
 
     - name: Deploy Central Postgres
       kubernetes.core.k8s:
@@ -104,14 +124,14 @@
         namespace: "{{ env_name }}-application"
         image: "{{ postgres_image }}"
 
-    - name: Deploy Central Frontend
-      kubernetes.core.k8s:
-        kubeconfig: "{{ kubeconfig }}"
-        state: present
-        definition: "{{ lookup('template', '../kubernetes/central/frontend.yaml') }}"
-      vars:
-        namespace: "{{ env_name }}-application"
-        image: "{{ frontend_image }}"
+    # - name: Deploy Central Frontend
+    #   kubernetes.core.k8s:
+    #     kubeconfig: "{{ kubeconfig }}"
+    #     state: present
+    #     definition: "{{ lookup('template', '../kubernetes/central/frontend.yaml') }}"
+    #   vars:
+    #     namespace: "{{ env_name }}-application"
+    #     image: "{{ frontend_image }}"
 
     # --- 2. REGIONAL COUNTRY SERVICES ---
     - name: Deploy Regional Services

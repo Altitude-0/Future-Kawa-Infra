@@ -35,22 +35,34 @@ spec:
         - name: mqtt-service
           image: "{{ image }}"
           ports:
-            - containerPort: 8081
+            - containerPort: {{ app_port }}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres:5432/futurekawa-postgres"
+              value: "jdbc:postgresql://db-brazil:5432/futurekawa-postgres"
             - name: DB_USER
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: mqtt_db_user
             - name: DB_PASSWORD
-              value: "secret"
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: mqtt_db_password
             - name: SPRING_RABBITMQ_HOST
               value: "rabbitmq"
             - name: SPRING_RABBITMQ_PORT
               value: "5672"
             - name: SPRING_RABBITMQ_USERNAME
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: mqtt_rabbitmq_user
             - name: SPRING_RABBITMQ_PASSWORD
-              value: "adminpassword"
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: mqtt_rabbitmq_password
             - name: MQTT_BROKER_URL
               value: "tcp://mosquitto:1883"
 ---
@@ -67,8 +79,8 @@ spec:
     environment: "{{ env_name }}"
   ports:
     - port: 80
-      targetPort: 8081
-      nodePort: {{ mqtt_service_port }}
+      targetPort: {{ app_port }}
+      nodePort: {{ mqtt_service_port | int }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

@@ -1,0 +1,82 @@
+# --- Regional Alerting Service Deployment ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alerting
+  namespace: {{ namespace }}
+  labels:
+    app: alerting
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+spec:
+  replicas: {{ replicas }}
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 300
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  selector:
+    matchLabels:
+      app: alerting
+      country: "{{ country }}"
+      environment: "{{ env_name }}"
+  template:
+    metadata:
+      labels:
+        app: alerting
+        country: "{{ country }}"
+        environment: "{{ env_name }}"
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: alerting
+          image: "{{ image }}"
+          ports:
+            - containerPort: {{ app_port }}
+          env:                                                                                                                                 
+            - name: MAIL_HOST                                                                                                                  
+              value: "mailhog"                                                                                                                 
+            - name: MAIL_PORT                                                                                                                  
+              value: "1025"                                                                                                                    
+            - name: MAIL_USER                                                                                                                  
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: alerting_mail_user                                                                                                                    
+            - name: MAIL_PASS                                                                                                                  
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: alerting_mail_password                                                                                                                    
+            - name: SPRING_RABBITMQ_HOST        # ← was RABBIT_HOST (wrong)                                                                    
+              value: "rabbitmq"                                                                                                                
+            - name: SPRING_RABBITMQ_PORT        # ← was RABBIT_PORT (wrong)                                                                    
+              value: "5672"                                                                                                                    
+            - name: SPRING_RABBITMQ_USERNAME    # ← missing, add this                                                                          
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: alerting_rabbitmq_user 
+            - name: SPRING_RABBITMQ_PASSWORD    # ← missing, add this
+              valueFrom:
+                secretKeyRef:
+                  name: brazil-staging-app-secrets
+                  key: alerting_rabbitmq_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alerting
+  namespace: {{ namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: alerting
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+  ports:
+    - port: 80
+      targetPort: {{ app_port }}
