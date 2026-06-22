@@ -10,3 +10,7 @@ data:
     SecRuleEngine DetectionOnly                                                                  
     SecRequestBodyAccess On                                                                                                            
     SecResponseBodyAccess Off
+    # Whitelist Jaeger UI host
+    SecRule REQUEST_HEADERS:Host "@streq jaeger-brazil.karim-portfolio.xyz" \
+      "id:9000,phase:1,pass,nolog,ctl:ruleEngine=Off"
+    

@@ -114,3 +114,13 @@
   when:
     - env_name == "staging"
     - country_item.name == "brazil"
+
+- name: "Deploy Jaeger for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/brazil/jaeger_brasil.yaml') }}"
+  vars:
+    namespace: "{{ env_name }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    jaeger_host: "{{ country_item.jaeger_host }}"
