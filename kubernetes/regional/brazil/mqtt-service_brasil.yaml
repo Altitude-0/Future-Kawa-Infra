@@ -65,6 +65,16 @@ spec:
                   key: mqtt_rabbitmq_password
             - name: MQTT_BROKER_URL
               value: "tcp://mosquitto:1883"
+            - name: MANAGEMENT_TRACING_SAMPLING_PROBABILITY
+              value: "1.0"
+            - name: SPRING_APPLICATION_NAME
+              value: "mqtt-service-brazil"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://jaeger:4318"
+            - name: OTEL_SERVICE_NAME
+              value: "mqtt-service-brazil"
+            - name: OTEL_TRACES_EXPORTER
+              value: "otlp"
 ---
 apiVersion: v1
 kind: Service

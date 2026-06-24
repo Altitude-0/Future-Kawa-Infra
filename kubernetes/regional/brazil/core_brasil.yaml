@@ -63,6 +63,16 @@ spec:
                     secretKeyRef:
                       name: brazil-staging-app-secrets
                       key: api_rabbitmq_password
+                - name: MANAGEMENT_TRACING_SAMPLING_PROBABILITY
+                  value: "1.0"
+                - name: SPRING_APPLICATION_NAME
+                  value: "api-brazil"
+                - name: OTEL_EXPORTER_OTLP_ENDPOINT
+                  value: "http://jaeger:4318"
+                - name: OTEL_SERVICE_NAME
+                  value: "api-brazil"
+                - name: OTEL_TRACES_EXPORTER
+                  value: "otlp"
           readinessProbe:
             tcpSocket:
               port: {{ app_port }}
