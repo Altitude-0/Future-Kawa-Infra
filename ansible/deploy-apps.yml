@@ -39,6 +39,8 @@
         rabbitmq_ui_port: 30673      # ← add this 
         mailhog_smtp_port: 30025   # ← add                                                          
         mailhog_ui_port:   30826   # ← add  
+        jaeger_host: "jaeger-brazil.karim-portfolio.xyz"   # ← ADD
+        jaeger_ui_port: 30686                              # ← ADD (optional NodePort)
 
       # - name: ecuador
       #   ui_port: 30002

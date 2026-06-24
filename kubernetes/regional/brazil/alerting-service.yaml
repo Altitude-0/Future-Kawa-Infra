@@ -65,6 +65,16 @@ spec:
                 secretKeyRef:
                   name: brazil-staging-app-secrets
                   key: alerting_rabbitmq_password
+            - name: MANAGEMENT_TRACING_SAMPLING_PROBABILITY
+              value: "1.0"
+            - name: SPRING_APPLICATION_NAME
+              value: "alerting-brazil"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://jaeger:4318"
+            - name: OTEL_SERVICE_NAME
+              value: "alerting-brazil"
+            - name: OTEL_TRACES_EXPORTER
+              value: "otlp"
 ---
 apiVersion: v1
 kind: Service
