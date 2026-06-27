@@ -58,7 +58,7 @@
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
-    image: "{{ vars['alerting_' + country_item.name + '_image'] }}"
+    image: "{{ alerting_brasil_image }}"
 
 - name: "Deploy Regional Postgres for {{ country_item.name }}"
   kubernetes.core.k8s:
@@ -102,7 +102,7 @@
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
-    image: "{{ vars['mqtt_service_' + country_item.name + '_image'] }}"
+    image: "{{ mqtt_service_brasil_image }}"
     mqtt_service_host: "{{ country_item.mqtt_service }}"
     mqtt_service_port: "{{ country_item.mqtt_service_port }}"
 

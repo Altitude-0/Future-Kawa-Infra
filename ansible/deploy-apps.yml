@@ -9,8 +9,8 @@
     # Images (can be overridden via -e)
     # central_api_image: "ghcr.io/altitude-0/futurekawa-product:f94cf902787208f362205a433c1369875f690433"
     core_brasil_image: ghcr.io/altitude-0/fk-brasil-core:v1.0.1
-    alerting_brazil_image: "ghcr.io/altitude-0/fk-brasil-alerting:v1.0.0"
-    mqtt_service_brazil_image: "ghcr.io/altitude-0/fk-brasil-mqtt:v1.0.1"
+    alerting_brasil_image: "ghcr.io/altitude-0/fk-brasil-alerting:v1.0.0"
+    mqtt_service_brasil_image: "ghcr.io/altitude-0/fk-brasil-mqtt:v1.0.1"
     # alerting_ecuador_image:  "ghcr.io/altitude-0/fk-ecuador-alerting:v1.0.0"
     # alerting_colombia_image: "ghcr.io/altitude-0/fk-colombia-alerting:v1.0.0"
     # frontend_image: "nginx:1.27-alpine"
