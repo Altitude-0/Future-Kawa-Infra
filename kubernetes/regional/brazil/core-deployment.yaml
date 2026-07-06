@@ -1,0 +1,106 @@
+# --- Regional API Deployment ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: {{ namespace }}
+  labels:
+    app: api
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+spec:
+  replicas: {{ replicas }}
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 300
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: api
+      country: "{{ country }}"
+      environment: "{{ env_name }}"
+  template:
+    metadata:
+      labels:
+        app: api
+        country: "{{ country }}"
+        environment: "{{ env_name }}"
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: api
+          image: "{{ image }}"
+          ports:
+            - containerPort: {{ app_port }}
+          env:
+                - name: SPRING_DATASOURCE_URL
+                  value: "jdbc:postgresql://db-{{ country }}:5432/futurekawa-postgres"
+                - name: SPRING_DATASOURCE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ country }}-staging-app-secrets"
+                      key: api_db_user
+                - name: SPRING_DATASOURCE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ country }}-staging-app-secrets"
+                      key: api_db_password
+                - name: SPRING_RABBITMQ_HOST
+                  value: "rabbitmq"
+                - name: SPRING_RABBITMQ_PORT
+                  value: "5672"
+                - name: SPRING_RABBITMQ_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ country }}-staging-app-secrets"
+                      key: api_rabbitmq_user
+                - name: SPRING_RABBITMQ_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ country }}-staging-app-secrets"
+                      key: api_rabbitmq_password
+                - name: MANAGEMENT_TRACING_SAMPLING_PROBABILITY
+                  value: "1.0"
+                - name: SPRING_APPLICATION_NAME
+                  value: "api-{{ country }}"
+                - name: OTEL_EXPORTER_OTLP_ENDPOINT
+                  value: "http://jaeger:4318"
+                - name: OTEL_SERVICE_NAME
+                  value: "api-{{ country }}"
+                - name: OTEL_TRACES_EXPORTER
+                  value: "otlp"
+          readinessProbe:
+            tcpSocket:
+              port: {{ app_port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          startupProbe:
+            tcpSocket:
+              port: {{ app_port }}
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ app_port }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api
+      namespace: {{ namespace }}
+    spec:
+      type: NodePort
+      selector:
+        app: api
+        country: "{{ country }}"
+        environment: "{{ env_name }}"
+      ports:
+        - port: 80
+          targetPort: {{ app_port | int }}
+          nodePort: {{ core_port | int }}

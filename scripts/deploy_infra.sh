@@ -33,9 +33,15 @@ fi
 
 # 4. Deploy Infrastructure via Helm
 echo "Deploying Vault..."
+# Persistent (file-backed) storage — dev mode wipes all secrets/policies on every
+# pod restart since it's in-memory only. Vault comes up sealed/uninitialized after
+# a fresh install; see docs/vault_kubernetes_guide.md for the init/unseal steps.
 helm upgrade --install vault hashicorp/vault \
     --namespace common \
-    --set server.dev.enabled=true
+    --set server.dev.enabled=false \
+    --set server.dataStorage.enabled=true \
+    --set server.dataStorage.size=1Gi \
+    --set server.dataStorage.storageClass=local-path
 
 echo "Deploying Loki..."
 helm upgrade --install loki grafana/loki \

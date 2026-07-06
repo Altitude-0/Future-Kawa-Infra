@@ -1,0 +1,62 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mosquitto-ui-colombia-route
+  namespace: staging-colombia
+spec:
+  parentRefs:
+    - name: main-gateway
+      namespace: apisix
+      sectionName: http
+  hostnames:
+    - mosquitto-colombia-ui.karim-portfolio.xyz
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: mosquitto-ui
+          port: 8088
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mqtt-service-colombia-route
+  namespace: staging-colombia
+spec:
+  parentRefs:
+    - name: main-gateway
+      namespace: apisix
+      sectionName: http
+  hostnames:
+    - mqtt-service-colombia.karim-portfolio.xyz
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: mqtt-service
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: rabbitmq-colombia-route
+  namespace: staging-colombia
+spec:
+  parentRefs:
+    - name: main-gateway
+      namespace: apisix
+      sectionName: http
+  hostnames:
+    - rabbitmq-colombia.karim-portfolio.xyz
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: rabbitmq
+          port: 15672
