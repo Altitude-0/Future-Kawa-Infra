@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: main-gateway
+  namespace: apisix
+spec:
+  gatewayClassName: apisix
+  listeners:
+    # HTTP listener — port 80
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All   # accept HTTPRoutes from any namespace
+
+    # TCP listener — port 1883 for MQTT (Mosquitto)
+    - name: mqtt
+      port: 1883
+      protocol: TCP
+      allowedRoutes:
+        namespaces:
+          from: All

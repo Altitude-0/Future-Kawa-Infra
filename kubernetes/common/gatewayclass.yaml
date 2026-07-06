@@ -1,0 +1,7 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: apisix
+spec:
+  controllerName: apisix.apache.org/apisix-ingress-controller
+  description: "APISIX Gateway — Future Kawa Infrastructure"

@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db-brazil
+  name: db-{{ country }}
   namespace: {{ namespace }}
   labels:
     app: postgres
@@ -31,21 +31,21 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: postgres_user
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: postgres_password
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: db-brazil
+  name: db-{{ country }}
   namespace: {{ namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: postgres
     country: "{{ country }}"
@@ -53,4 +53,3 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-      nodePort: {{ db_port | int }} 

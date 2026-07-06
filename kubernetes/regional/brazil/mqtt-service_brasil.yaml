@@ -38,16 +38,16 @@ spec:
             - containerPort: {{ app_port }}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://db-brazil:5432/futurekawa-postgres"
+              value: "jdbc:postgresql://db-{{ country }}:5432/futurekawa-postgres"
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: mqtt_db_user
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: mqtt_db_password
             - name: SPRING_RABBITMQ_HOST
               value: "rabbitmq"
@@ -56,23 +56,23 @@ spec:
             - name: SPRING_RABBITMQ_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: mqtt_rabbitmq_user
             - name: SPRING_RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: mqtt_rabbitmq_password
             - name: MQTT_BROKER_URL
               value: "tcp://mosquitto:1883"
             - name: MANAGEMENT_TRACING_SAMPLING_PROBABILITY
               value: "1.0"
             - name: SPRING_APPLICATION_NAME
-              value: "mqtt-service-brazil"
+              value: "mqtt-service-{{ country }}"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://jaeger:4318"
             - name: OTEL_SERVICE_NAME
-              value: "mqtt-service-brazil"
+              value: "mqtt-service-{{ country }}"
             - name: OTEL_TRACES_EXPORTER
               value: "otlp"
 ---
