@@ -34,12 +34,12 @@ spec:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: rabbitmq_user
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: rabbitmq_password
           readinessProbe:                                                                                                                      
                 exec:                                                                                                                              
@@ -62,7 +62,7 @@ metadata:
   name: rabbitmq
   namespace: {{ namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: rabbitmq
     country: "{{ country }}"
@@ -71,8 +71,6 @@ spec:
     - name: amqp
       port: 5672
       targetPort: 5672
-      nodePort: {{ rabbitmq_amqp_port | int }}  
     - name: management
       port: 15672
       targetPort: 15672
-      nodePort: {{ rabbitmq_ui_port | int }} 

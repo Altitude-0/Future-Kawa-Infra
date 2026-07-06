@@ -30,7 +30,7 @@ spec:
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_PASSWORD
-              value: "secret"
+              value: "tZ0MKHbyB0NX14GfQbU2Mm6P"
 ---
 apiVersion: v1
 kind: Service
@@ -38,7 +38,7 @@ metadata:
   name: postgres
   namespace: {{ namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: postgres
     role: main
@@ -46,4 +46,3 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-      nodePort: 31432

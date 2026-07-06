@@ -44,12 +44,12 @@ spec:
             - name: MAIL_USER                                                                                                                  
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: alerting_mail_user                                                                                                                    
             - name: MAIL_PASS                                                                                                                  
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: alerting_mail_password                                                                                                                    
             - name: SPRING_RABBITMQ_HOST        # ← was RABBIT_HOST (wrong)                                                                    
               value: "rabbitmq"                                                                                                                
@@ -58,21 +58,21 @@ spec:
             - name: SPRING_RABBITMQ_USERNAME    # ← missing, add this                                                                          
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: alerting_rabbitmq_user 
             - name: SPRING_RABBITMQ_PASSWORD    # ← missing, add this
               valueFrom:
                 secretKeyRef:
-                  name: brazil-staging-app-secrets
+                  name: "{{ country }}-staging-app-secrets"
                   key: alerting_rabbitmq_password
             - name: MANAGEMENT_TRACING_SAMPLING_PROBABILITY
               value: "1.0"
             - name: SPRING_APPLICATION_NAME
-              value: "alerting-brazil"
+              value: "alerting-{{ country }}"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://jaeger:4318"
             - name: OTEL_SERVICE_NAME
-              value: "alerting-brazil"
+              value: "alerting-{{ country }}"
             - name: OTEL_TRACES_EXPORTER
               value: "otlp"
 ---

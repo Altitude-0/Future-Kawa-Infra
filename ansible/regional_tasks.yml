@@ -14,16 +14,27 @@
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
 
+- name: "Deploy staging Vault secrets for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/brazil/staging-app-external-secret.yaml') }}"
+  vars:
+    namespace: "{{ env_name }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+  when:
+    - env_name == "staging"
+
 - name: "Deploy Regional Core API for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/core_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/brazil/core-deployment.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
-    image: "{{ core_brasil_image }}"
-    core_port: "{{ country_item.core_port }}"                                                                           
+    image: "{{ country_item.core_image }}"
+    core_port: "{{ country_item.core_port }}"
     api_host: "{{ country_item.api_host }}"
 
 - name: "Deploy RabbitMQ for {{ country_item.name }}"
@@ -58,7 +69,7 @@
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
-    image: "{{ alerting_brasil_image }}"
+    image: "{{ country_item.alerting_image }}"
 
 - name: "Deploy Regional Postgres for {{ country_item.name }}"
   kubernetes.core.k8s:
@@ -102,18 +113,9 @@
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
-    image: "{{ mqtt_service_brasil_image }}"
+    image: "{{ country_item.mqtt_image }}"
     mqtt_service_host: "{{ country_item.mqtt_service }}"
     mqtt_service_port: "{{ country_item.mqtt_service_port }}"
-
-- name: "Deploy Brazil staging Vault secrets"
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig }}"
-    state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/staging-brazil-external-secret.yaml') }}"
-  when:
-    - env_name == "staging"
-    - country_item.name == "brazil"
 
 - name: "Deploy Jaeger for {{ country_item.name }}"
   kubernetes.core.k8s:
