@@ -1,0 +1,58 @@
+# --- Regional pgAdmin (Postgres Admin UI) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+  namespace: {{ namespace }}
+  labels:
+    app: pgadmin
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+      country: "{{ country }}"
+      environment: "{{ env_name }}"
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+        country: "{{ country }}"
+        environment: "{{ env_name }}"
+    spec:
+      containers:
+        - name: pgadmin
+          image: "{{ image }}"
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: "admin@karim-portfolio.xyz"
+            - name: PGADMIN_DEFAULT_PASSWORD
+              value: "AdminPg{{ country | capitalize }}2026!"
+            - name: PGADMIN_LISTEN_PORT
+              value: "80"
+          volumeMounts:
+            - name: pgadmin-data
+              mountPath: /var/lib/pgadmin
+      volumes:
+        - name: pgadmin-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin
+  namespace: {{ namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: pgadmin
+    country: "{{ country }}"
+    environment: "{{ env_name }}"
+  ports:
+    - port: 80
+      targetPort: 80

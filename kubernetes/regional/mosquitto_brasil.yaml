@@ -60,7 +60,7 @@ metadata:
   name: mosquitto
   namespace: {{ namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: mosquitto
     country: "{{ country }}"
@@ -69,4 +69,3 @@ spec:
     - name: mqtt
       port: 1883
       targetPort: 1883
-      nodePort: {{ mosquitto_port | int }} 

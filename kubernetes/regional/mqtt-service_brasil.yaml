@@ -82,7 +82,7 @@ metadata:
   name: mqtt-service
   namespace: {{ namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: mqtt-service
     country: "{{ country }}"
@@ -90,28 +90,3 @@ spec:
   ports:
     - port: 80
       targetPort: {{ app_port }}
-      nodePort: {{ mqtt_service_port | int }}
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: mqtt-service
-  namespace: {{ namespace }}
-  annotations:                                                                                                                         
-    traefik.ingress.kubernetes.io/router.middlewares: common-waf@kubernetescrd 
-  labels:
-    app: mqtt-service
-    country: "{{ country }}"
-    environment: "{{ env_name }}"
-spec:
-  rules:
-  - host: "{{ mqtt_service_host }}"
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: mqtt-service
-            port:
-              number: 80
