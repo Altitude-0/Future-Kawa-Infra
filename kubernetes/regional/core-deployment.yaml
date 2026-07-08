@@ -95,7 +95,7 @@ spec:
       name: api
       namespace: {{ namespace }}
     spec:
-      type: NodePort
+      type: ClusterIP
       selector:
         app: api
         country: "{{ country }}"
@@ -103,4 +103,3 @@ spec:
       ports:
         - port: 80
           targetPort: {{ app_port | int }}
-          nodePort: {{ core_port | int }}

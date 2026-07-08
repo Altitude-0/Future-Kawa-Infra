@@ -18,7 +18,7 @@
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/staging-app-external-secret.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/staging-app-external-secret.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
@@ -29,43 +29,37 @@
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/core-deployment.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/core-deployment.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
     image: "{{ country_item.core_image }}"
-    core_port: "{{ country_item.core_port }}"
-    api_host: "{{ country_item.api_host }}"
 
 - name: "Deploy RabbitMQ for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/rabbit-mq_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/rabbit-mq_brasil.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
     image: "{{ rabbitmq_image }}"
-    rabbitmq_amqp_port: "{{ country_item.rabbitmq_amqp_port }}"
-    rabbitmq_ui_port: "{{ country_item.rabbitmq_ui_port }}"
 
 - name: "Deploy MailHog for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/mailhog_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/mailhog_brasil.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
     image: "{{ mailhog_image }}"
-    mailhog_smtp_port: "{{ country_item.mailhog_smtp_port }}"  
-    mailhog_ui_port: "{{ country_item.mailhog_ui_port }}" 
 
 - name: "Deploy Alerting Service for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/alerting-service.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/alerting-service.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
@@ -75,54 +69,57 @@
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/postgres_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/postgres_brasil.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
     image: "{{ postgres_image }}"
-    db_port: "{{ country_item.db_port }}" 
+
+- name: "Deploy pgAdmin for {{ country_item.name }}"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', '../kubernetes/regional/pgadmin_brasil.yaml') }}"
+  vars:
+    namespace: "{{ env_name }}-{{ country_item.name }}"
+    country: "{{ country_item.name }}"
+    image: "{{ pgadmin_image }}"
 
 - name: "Deploy Mosquitto for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/mosquitto_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/mosquitto_brasil.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
     image: "{{ mosquitto_image }}"
-    mosquitto_port: "{{ country_item.mosquitto_port }}" 
 
 - name: "Deploy Mosquitto UI for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/mosquitto-ui_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/mosquitto-ui_brasil.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
     image: "{{ mosquitto_ui_image }}"
-    ui_host: "{{ country_item.mosquitto_ui_host }}"
-    ui_port: "{{ country_item.mosquitto_ui_port }}"
 
 - name: "Deploy MQTT Service for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/mqtt-service_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/mqtt-service_brasil.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
     image: "{{ country_item.mqtt_image }}"
-    mqtt_service_host: "{{ country_item.mqtt_service }}"
-    mqtt_service_port: "{{ country_item.mqtt_service_port }}"
 
 - name: "Deploy Jaeger for {{ country_item.name }}"
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     state: present
-    definition: "{{ lookup('template', '../kubernetes/regional/brazil/jaeger_brasil.yaml') }}"
+    definition: "{{ lookup('template', '../kubernetes/regional/jaeger_brasil.yaml') }}"
   vars:
     namespace: "{{ env_name }}-{{ country_item.name }}"
     country: "{{ country_item.name }}"
-    jaeger_host: "{{ country_item.jaeger_host }}"
