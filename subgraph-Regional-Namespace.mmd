@@ -1,9 +1,0 @@
-graph TD
-    subgraph "Regional Namespace (e.g., staging-brazil)"
-        Ingress[Ingress Controller] -->|HTTP/WS| MQTT_Service[MQTT Service]
-        MQTT_Service -->|DB Conn| Postgres[(PostgreSQL)]
-        MQTT_Service -->|AMQP| RabbitMQ[RabbitMQ]
-        MQTT_Service -->|Kafka Events| Kafka[Kafka]
-        MQTT_Service -->|MQTT Pub/Sub| Mosquitto[Mosquitto Broker]
-    end
-    Internet[Internet Clients] -->|mqtt-service-brazil.karim-portfolio.xyz| Ingress

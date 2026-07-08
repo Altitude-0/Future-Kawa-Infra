@@ -21,6 +21,7 @@
     postgres_image: "postgres:16"                                                                                                    
     mosquitto_image: "eclipse-mosquitto:2.0.18"                                                                                        
     mosquitto_ui_image: "cedalo/management-center:2.6.4"
+    pgadmin_image: "dpage/pgadmin4:8.12"
     rabbitmq_image: "rabbitmq:3.13-management"
     mailhog_image: "mailhog/mailhog:v1.0.1" 
     
@@ -33,61 +34,16 @@
         core_image: "{{ core_brasil_image }}"
         alerting_image: "{{ alerting_brasil_image }}"
         mqtt_image: "{{ mqtt_service_brasil_image }}"
-        ui_port: 30001
-        db_port: 30432
-        api_host: "api-brazil.karim-portfolio.xyz"
-        core_port: 30800
-        mosquitto_port: 30292
-        mosquitto_ui_port: 30301
-        mosquitto_ui_host: "mosquitto-brazil-ui.karim-portfolio.xyz"
-        mqtt_service: "mqtt-service-brazil.karim-portfolio.xyz"
-        mqtt_service_port: 30081
-        rabbitmq_amqp_port: 30672    # ← add this
-        rabbitmq_ui_port: 30673      # ← add this
-        mailhog_smtp_port: 30025   # ← add
-        mailhog_ui_port:   30826   # ← add
-        jaeger_host: "jaeger-brazil.karim-portfolio.xyz"   # ← ADD
-        jaeger_ui_port: 30686                              # ← ADD (optional NodePort)
 
       - name: ecuador
         core_image: "{{ core_ecuador_image }}"
         alerting_image: "{{ alerting_ecuador_image }}"
         mqtt_image: "{{ mqtt_service_ecuador_image }}"
-        ui_port: 30002
-        db_port: 30433
-        api_host: "api-ecuador.karim-portfolio.xyz"
-        core_port: 30801
-        mosquitto_port: 30293
-        mosquitto_ui_port: 30302
-        mosquitto_ui_host: "mosquitto-ecuador-ui.karim-portfolio.xyz"
-        mqtt_service: "mqtt-service-ecuador.karim-portfolio.xyz"
-        mqtt_service_port: 30082
-        rabbitmq_amqp_port: 30674
-        rabbitmq_ui_port: 30675
-        mailhog_smtp_port: 30026
-        mailhog_ui_port: 30827
-        jaeger_host: "jaeger-ecuador.karim-portfolio.xyz"
-        jaeger_ui_port: 30687
 
       - name: colombia
         core_image: "{{ core_colombia_image }}"
         alerting_image: "{{ alerting_colombia_image }}"
         mqtt_image: "{{ mqtt_service_colombia_image }}"
-        ui_port: 30003
-        db_port: 30434
-        api_host: "api-colombia.karim-portfolio.xyz"
-        core_port: 30802
-        mosquitto_port: 30294
-        mosquitto_ui_port: 30303
-        mosquitto_ui_host: "mosquitto-colombia-ui.karim-portfolio.xyz"
-        mqtt_service: "mqtt-service-colombia.karim-portfolio.xyz"
-        mqtt_service_port: 30083
-        rabbitmq_amqp_port: 30676
-        rabbitmq_ui_port: 30677
-        mailhog_smtp_port: 30027
-        mailhog_ui_port: 30828
-        jaeger_host: "jaeger-colombia.karim-portfolio.xyz"
-        jaeger_ui_port: 30688
 
   tasks:
     - name: Install dependencies for Kubernetes modules via APT

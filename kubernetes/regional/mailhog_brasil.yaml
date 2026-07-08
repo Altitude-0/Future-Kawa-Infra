@@ -48,7 +48,7 @@ metadata:
   name: mailhog
   namespace: {{ namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: mailhog
     country: "{{ country }}"
@@ -57,8 +57,6 @@ spec:
     - name: smtp
       port: 1025
       targetPort: 1025
-      nodePort: {{ mailhog_smtp_port | int }} 
     - name: ui
       port: 8025
-      targetPort: 8025
-      nodePort: {{ mailhog_ui_port | int }}   
+      targetPort: 8025   

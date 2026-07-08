@@ -54,7 +54,7 @@ metadata:
   name: mosquitto-ui
   namespace: {{ namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: mosquitto-ui
     country: "{{ country }}"
@@ -62,28 +62,3 @@ spec:
   ports:
     - port: 8088
       targetPort: 8088
-      nodePort: {{ ui_port | int }} 
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: mosquitto-ui
-  namespace: {{ namespace }}
-  annotations:                                                                                                                         
-    traefik.ingress.kubernetes.io/router.middlewares: common-waf@kubernetescrd 
-  labels:
-    app: mosquitto-ui
-    country: "{{ country }}"
-    environment: "{{ env_name }}"
-spec:
-  rules:
-  - host: "{{ ui_host }}"
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: mosquitto-ui
-            port:
-              number: 8088
